@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 
 import { Container, DropdownStyles } from './styles'
-import { DropdownOption, DropdownProvider } from '../Dropdown'
+import { DropdownOption, DropdownProvider, DropdownRoot } from '../Dropdown'
 import { Developers, Company, Products } from '../Content'
 
 const Navbar = props => {
@@ -30,6 +30,7 @@ const Navbar = props => {
             </li>
           </ul>
         </Container>
+        <DropdownRoot />
       </DropdownStyles>
     </DropdownProvider>
   )

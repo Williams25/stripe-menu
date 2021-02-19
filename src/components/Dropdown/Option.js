@@ -1,25 +1,24 @@
-import { useState, useRef, useContext, useEffect } from 'react'
-
+import React, { useRef, useState, useContext, useEffect } from 'react'
 import { motion } from 'framer-motion'
+
 import { useDimensions } from './dimensions'
 import { Context } from './Provider'
 
-let lastOpinionId = 0
+let lastOptionId = 0
 
 export const DropdownOption = ({ name, content: Content, backgroundHeight }) => {
-  const idRef = useRef(++lastOpinionId)
+  const idRef = useRef(++lastOptionId)
   const id = idRef.current
 
   const [optionHook, optionDimensions] = useDimensions()
   const [registered, setRegistered] = useState(false)
 
   const {
-    registerOptions,
+    registerOption,
     updateOptionProps,
-    getOptionById,
     deleteOptionById,
+    setTargetId,
     targetId,
-    setTargetId
   } = useContext(Context)
 
   useEffect(() => {
@@ -36,27 +35,58 @@ export const DropdownOption = ({ name, content: Content, backgroundHeight }) => 
           <div ref={contentRef}>
             <Content />
           </div>
-        )
-      }
+        );
+      };
 
-      registerOptions({
+      registerOption({
         id,
         optionDimensions,
         optionCenterX: optionDimensions.x + optionDimensions.width / 2,
         WrappedContent,
-        backgroundHeight
-      })
+        backgroundHeight,
+      });
 
       setRegistered(true)
     } else if (registered && optionDimensions) {
-      
+      updateOptionProps(id, {
+        optionDimensions,
+        optionCenterX: optionDimensions.x + optionDimensions.width / 2,
+      })
     }
-  }, [])
+  }, [
+    registerOption,
+    id,
+    registered,
+    optionDimensions,
+    updateOptionProps,
+    deleteOptionById,
+    backgroundHeight,
+  ])
+
+  useEffect(() => deleteOptionById(id), [deleteOptionById, id])
+
+  const handleOpen = () => setTargetId(id)
+  const handleClose = () => setTargetId(null)
+  const handleTouch = () => (window.isMobile = true)
+
+  const handleClick = (e) => {
+    e.preventDefault()
+
+    return targetId === id ? handleClose() : handleOpen()
+  };
 
   return (
-    <motion.button className="dropdown-option">
+    <motion.button
+      className="dropdown-option"
+      ref={optionHook}
+      onMouseDown={handleClick}
+      onHoverStart={() => !window.isMobile && handleOpen()}
+      onHoverEnd={() => !window.isMobile && handleClose()}
+      onTouchStart={handleTouch}
+      onFocus={handleOpen}
+      onBlur={handleClose}
+    >
       {name}
     </motion.button>
   )
 }
-

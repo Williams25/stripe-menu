@@ -1,18 +1,18 @@
 import { useState, useCallback, useLayoutEffect } from 'react'
 
-const getDimensions = element => element.getBoundingClientRect()
+const getDimensions = (element) => element.getBoundingClientRect()
 
 export const useDimensions = (responsive = true) => {
   const [dimensions, setDimensions] = useState(null)
   const [element, setElement] = useState(null)
 
-  const hook = useCallback(e => setElement(e), [setElement])
+  const hook = useCallback(e => setElement(e), [])
 
   useLayoutEffect(() => {
     if (element) {
       const updateDimensions = () => {
         window.requestAnimationFrame(() => {
-          setDimensions(getDimensions(element));
+          setDimensions(getDimensions(element))
         });
       };
 
@@ -23,10 +23,10 @@ export const useDimensions = (responsive = true) => {
 
         return () => {
           window.removeEventListener('resize', updateDimensions)
-        }
+        };
       }
     }
   }, [element, hook, responsive])
 
-  return [hook, element, dimensions]
+  return [hook, dimensions, element]
 }
